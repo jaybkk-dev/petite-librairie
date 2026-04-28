@@ -39,7 +39,20 @@ function b64decode(s: string): string {
 export async function checkRepo(cfg: SyncConfig): Promise<boolean> {
   const res = await fetch(`${API}/repos/${cfg.repo}`, { headers: headers(cfg) });
   if (res.status === 404) return false;
-  if (!res.ok) throw new GitHubError(`Échec d'accès au dépôt (${res.status})`, res.status);
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    let detail = '';
+    try {
+      const j = JSON.parse(body) as { message?: string };
+      if (j.message) detail = j.message;
+    } catch {
+      detail = body.slice(0, 200);
+    }
+    throw new GitHubError(
+      `Échec d'accès au dépôt (${res.status})${detail ? ' — ' + detail : ''}`,
+      res.status,
+    );
+  }
   return true;
 }
 

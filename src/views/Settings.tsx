@@ -58,11 +58,7 @@ export function Settings() {
       setMessage('Connexion validée.');
     } catch (err) {
       setStep('error');
-      if (err instanceof GitHubError && err.status === 401) {
-        setMessage('PAT refusé (401). Vérifier les autorisations « Contents : Read and write ».');
-      } else {
-        setMessage(err instanceof Error ? err.message : String(err));
-      }
+      setMessage(err instanceof Error ? err.message : String(err));
     }
   };
 
