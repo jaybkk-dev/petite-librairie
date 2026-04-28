@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '../store';
-import { checkRepo, GitHubError } from '../lib/github';
+import { checkRepo } from '../lib/github';
 import type { Book, SyncConfig } from '../types';
 import { Brand } from '../components/Brand';
 import './Settings.css';
