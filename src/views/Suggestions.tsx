@@ -4,14 +4,31 @@ import { useStore } from '../store';
 import { SuggestionSheet } from './SuggestionSheet';
 import './Suggestions.css';
 
+type LaunchPhase = 'idle' | 'launching' | 'launched' | 'error';
+
 export function Suggestions() {
-  const { data, acceptInbox, dismissInbox } = useStore();
+  const { data, acceptInbox, dismissInbox, triggerDiscovery } = useStore();
   const [adding, setAdding] = useState(false);
+  const [launch, setLaunch] = useState<LaunchPhase>('idle');
+  const [launchError, setLaunchError] = useState<string>('');
 
   const ordered = useMemo(
     () => [...data.inbox].sort((a, b) => b.addedAt.localeCompare(a.addedAt)),
     [data.inbox],
   );
+
+  const handleLaunch = async () => {
+    if (!confirm('Lancer une nouvelle recherche ?')) return;
+    setLaunch('launching');
+    setLaunchError('');
+    try {
+      await triggerDiscovery();
+      setLaunch('launched');
+    } catch (err) {
+      setLaunch('error');
+      setLaunchError(err instanceof Error ? err.message : String(err));
+    }
+  };
 
   return (
     <div className="suggestions">
@@ -28,11 +45,29 @@ export function Suggestions() {
           <button
             type="button"
             className="suggestions__add-btn"
+            onClick={handleLaunch}
+            disabled={launch === 'launching'}
+          >
+            {launch === 'launching' ? 'Lancement…' : '↻ Lancer une recherche'}
+          </button>
+          <button
+            type="button"
+            className="suggestions__add-btn"
             onClick={() => setAdding(true)}
           >
             + Ajouter une suggestion
           </button>
         </div>
+        {launch === 'launched' && (
+          <p className="suggestions__launch-msg">
+            Recherche lancée. Les nouvelles suggestions arriveront dans quelques minutes.
+          </p>
+        )}
+        {launch === 'error' && (
+          <p className="suggestions__launch-msg suggestions__launch-msg--error">
+            Échec du lancement{launchError ? ' — ' + launchError : ''}
+          </p>
+        )}
       </header>
 
       {ordered.length === 0 ? (

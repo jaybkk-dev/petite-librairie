@@ -45,7 +45,8 @@
 .suggestions__add-row {
   margin-top: 12px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .suggestions__add-btn {
@@ -60,6 +61,24 @@
 .suggestions__add-btn:hover,
 .suggestions__add-btn:active {
   color: var(--ink);
+}
+
+.suggestions__add-btn:disabled {
+  color: var(--ink-faint);
+  cursor: default;
+}
+
+.suggestions__launch-msg {
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.4px;
+  color: var(--ink-mute);
+  line-height: 1.5;
+}
+
+.suggestions__launch-msg--error {
+  color: #a14b3a;
 }
 
 .suggestions__empty {

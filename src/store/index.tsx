@@ -77,6 +77,7 @@ interface StoreValue {
   importEpub: (input: ImportEpubInput) => Promise<Book>;
   attachEpub: (bookId: string, file: File) => Promise<void>;
   triggerAcquisition: (bookId: string) => Promise<void>;
+  triggerDiscovery: () => Promise<void>;
 }
 
 export interface ImportEpubInput {
@@ -641,6 +642,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [config],
   );
 
+  const triggerDiscovery = useCallback(async (): Promise<void> => {
+    if (!config) throw new Error('PAT et dépôt requis pour lancer l\'agent.');
+    await dispatchWorkflow(config, 'discovery.yml', {});
+  }, [config]);
+
   const value = useMemo<StoreValue>(
     () => ({
       config,
@@ -669,6 +675,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       importEpub,
       attachEpub,
       triggerAcquisition,
+      triggerDiscovery,
     }),
     [
       config,
@@ -696,6 +703,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       importEpub,
       attachEpub,
       triggerAcquisition,
+      triggerDiscovery,
     ],
   );
 
