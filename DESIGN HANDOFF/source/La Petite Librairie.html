@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>La Petite Librairie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #1a1612; }
+  body { font-family: "Inter Tight", -apple-system, sans-serif; }
+  *::-webkit-scrollbar { display: none; }
+  * { scrollbar-width: none; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="data.jsx"></script>
+<script type="text/babel" src="chrome.jsx"></script>
+<script type="text/babel" src="library.jsx"></script>
+<script type="text/babel" src="bookcase.jsx"></script>
+<script type="text/babel" src="detail.jsx"></script>
+<script type="text/babel" src="reader.jsx"></script>
+<script type="text/babel" src="inbox.jsx"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState } = React;
+
+function App() {
+  // Pre-expanded book in the library list, for visual demo of expand state
+  const detailBook = window.BOOKS.find(b => b.n === '01');
+
+  return (
+    <DesignCanvas>
+      <DCSection id="overview" title="La Petite Librairie"
+        subtitle="Application de lecture personnelle, mobile-first — cinq vues, en français, à la forme infinitive.">
+
+        <DCArtboard id="library" label="01 · Bibliothèque (liste)" width={390} height={844}>
+          <window.LibraryView initialExpanded="01" />
+        </DCArtboard>
+
+        <DCArtboard id="bookcase" label="02 · Étagère" width={390} height={844}>
+          <window.BookcaseView />
+        </DCArtboard>
+
+        <DCArtboard id="detail" label="03 · Fiche du livre" width={390} height={844}>
+          <window.BookDetail book={detailBook} />
+        </DCArtboard>
+
+        <DCArtboard id="reader" label="04 · Lecture (jour)" width={390} height={844}>
+          <window.ReaderView night={false} />
+        </DCArtboard>
+
+        <DCArtboard id="reader-night" label="04b · Lecture (nuit)" width={390} height={844}>
+          <window.ReaderView night={true} fontSize={20} withSelection={false} />
+        </DCArtboard>
+
+        <DCArtboard id="inbox" label="05 · Suggestions" width={390} height={844}>
+          <window.InboxView />
+        </DCArtboard>
+
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

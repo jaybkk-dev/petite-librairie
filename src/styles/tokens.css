@@ -1,0 +1,24 @@
+:root {
+  --paper:       #f4efe6;
+  --paper-deep:  #ece5d6;
+  --ink:         #1a1612;
+  --ink-soft:    #3d362c;
+  --ink-mute:    #7a6f5e;
+  --ink-faint:   #b8ad97;
+  --rule:        rgba(26, 22, 18, 0.12);
+  --rule-strong: rgba(26, 22, 18, 0.22);
+  --accent:      #7a2418;
+  --accent-soft: #a64a3a;
+
+  --night-bg:    #0f0c08;
+  --night-fg:    #d4c5a8;
+  --night-soft:  #8a7d65;
+  --night-mute:  #5a5040;
+
+  --serif: "Cormorant Garamond", "EB Garamond", Georgia, serif;
+  --sans:  "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:  "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+
+  --status-bar-h: 54px;
+  --tab-bar-h:    84px;
+}

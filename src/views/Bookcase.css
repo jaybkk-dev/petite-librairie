@@ -1,0 +1,76 @@
+.bookcase {
+  border-top: 0.5px solid var(--rule-strong);
+}
+
+.bookcase__controls {
+  padding: 14px 24px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bookcase__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bookcase__eyebrow {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.bookcase__shelves {
+  padding-top: 8px;
+  padding-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bookcase__shelf {
+  position: relative;
+}
+
+.bookcase__spines {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  padding: 0 24px;
+}
+
+.bookcase__board {
+  height: 16px;
+  background-color: #9c7a51;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(50, 28, 12, 0.22) 3px,
+      rgba(50, 28, 12, 0.22) 4px,
+      transparent 4px,
+      transparent 9px,
+      rgba(50, 28, 12, 0.10) 9px,
+      rgba(50, 28, 12, 0.10) 10px,
+      transparent 10px,
+      transparent 17px,
+      rgba(50, 28, 12, 0.16) 17px,
+      rgba(50, 28, 12, 0.16) 18px,
+      transparent 18px,
+      transparent 28px
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 240, 210, 0.18) 0%,
+      transparent 30%,
+      transparent 70%,
+      rgba(0, 0, 0, 0.30) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 240, 210, 0.20),
+    0 2px 4px rgba(0, 0, 0, 0.25);
+}

@@ -1,0 +1,26 @@
+.seg {
+  display: flex;
+  border: 0.5px solid var(--rule-strong);
+}
+
+.seg__item {
+  flex: 1;
+  padding: 9px 6px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: transparent;
+  white-space: nowrap;
+}
+
+.seg__item + .seg__item {
+  border-left: 0.5px solid var(--rule-strong);
+}
+
+.seg__item--active {
+  background: var(--ink);
+  color: var(--paper);
+}

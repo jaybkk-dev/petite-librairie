@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npx vite *)",
+      "Bash(curl -sI \"http://localhost:5173/epubs/24-ernaux-la-place.epub\")",
+      "Bash(node -e \"const s = 'Gaudé'.normalize\\('NFD'\\).replace\\(/[̀-ͯ]/g, ''\\); console.log\\(s\\);\")",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)"
+    ]
+  }
+}

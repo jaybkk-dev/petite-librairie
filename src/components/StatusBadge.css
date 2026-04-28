@@ -1,0 +1,45 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 0;
+  display: inline-block;
+}
+
+.badge--a-lire .badge__dot {
+  background: var(--ink-faint);
+}
+
+.badge--en-cours .badge__dot {
+  background: var(--accent);
+}
+
+.badge--lu .badge__dot {
+  background: var(--ink-soft);
+}
+
+.badge--abandonne .badge__dot {
+  background: transparent;
+  border: 1px solid var(--ink-mute);
+  width: 6px;
+  height: 6px;
+}
+
+button.badge {
+  cursor: pointer;
+}

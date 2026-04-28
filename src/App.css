@@ -1,0 +1,24 @@
+.app {
+  min-height: 100%;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+}
+
+.app__main {
+  flex: 1;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: var(--tab-bar-h);
+  min-height: 100vh;
+}
+
+.empty {
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.empty__text {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--ink-mute);
+}

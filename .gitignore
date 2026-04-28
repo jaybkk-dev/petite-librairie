@@ -1,0 +1,17 @@
+node_modules
+dist
+dist-ssr
+.env
+.env.local
+.DS_Store
+*.log
+
+# local epub fixtures for dev — production epubs live in the data repo
+public/epubs/
+library/
+
+# agents are authored here but deployed to the data repo (jaybkk-dev/petite-librairie-data)
+agents/
+
+# machine-local Claude settings (contains absolute paths)
+.claude/settings.local.json

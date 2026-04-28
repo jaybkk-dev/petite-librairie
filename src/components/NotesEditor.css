@@ -1,0 +1,19 @@
+.notes-editor {
+  width: 100%;
+  resize: none;
+  min-height: 22px;
+  padding: 0 0 6px 0;
+  border-bottom: 0.5px solid var(--rule-strong);
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink);
+  background: transparent;
+  display: block;
+}
+
+.notes-editor::placeholder {
+  color: var(--ink-faint);
+  font-family: var(--serif);
+  opacity: 1;
+}

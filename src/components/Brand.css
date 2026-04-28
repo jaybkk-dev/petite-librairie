@@ -1,0 +1,21 @@
+.brand {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.brand__small {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0;
+}
+
+.brand__big {
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+}
