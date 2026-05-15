@@ -34,6 +34,10 @@ The following copy strings are fixed and authoritative — reuse exactly:
 
 The app lives as a static site on **GitHub Pages**. Data lives in a **separate, private GitHub data repo** owned by the user, accessed via the GitHub Contents API.
 
+**Repos.**
+- App source: `jaybkk-dev/petite-librairie` (public) — auto-deploys to `https://jaybkk-dev.github.io/petite-librairie/` via `.github/workflows/pages.yml` on push to `main`.
+- Data: `jaybkk-dev/petite-librairie-data` (private) — JSON snapshots, epubs, agent workflows.
+
 **Authentication.** A fine-grained Personal Access Token (PAT) is entered once in Réglages and stored in `localStorage`. The same PAT is used by the app and by the agents — agent and app commits land in the same repo and pull through the same path.
 
 **Layout of the data repo.**
@@ -54,7 +58,7 @@ The app lives as a static site on **GitHub Pages**. Data lives in a **separate, 
 
 **One writer assumption.** A single user with at most one device active at a time. The agents commit while the app is closed. Conflicts are not expected; if the Contents API returns a SHA mismatch on push, the next sync round refetches the SHA and retries.
 
-**Home-screen install (deferred).** The app should install from the GitHub Pages URL as a PWA so it opens chromeless from the home-screen icon — no browser URL bar, dedicated app icon. Minimal scope: a `manifest.webmanifest` with `display: "standalone"`, theme/background colours, name, and an icon list (192px + 512px PNGs); the iOS meta tags `apple-mobile-web-app-capable` and `apple-mobile-web-app-status-bar-style`; a 180px `apple-touch-icon`. No service worker — offline caching is not needed since data lives in the GitHub repo and the app already survives reloads via `localStorage`. Standalone mode requires HTTPS, so this only takes effect on the deployed Pages URL, not the dev server.
+**Home-screen install.** The app installs from the GitHub Pages URL as a PWA — *Add to Home Screen* on iOS Safari or *Install app* on Android Chrome opens it chromeless, no browser URL bar. Wired up via `public/manifest.webmanifest` (`display: "standalone"`, theme/background `#f4efe6`, 192/512 icons), the iOS meta tags in `index.html` (`apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`, `apple-touch-icon`), and a 180px apple-touch-icon. Icons are the *La Petite LIBRAIRIE* logo composited on the cream paper background. No service worker — offline caching is not needed since data lives in the data repo and the app already survives reloads via `localStorage`. Standalone mode requires HTTPS, so it only takes effect on the deployed Pages URL, not the local dev server.
 
 ---
 
@@ -219,6 +223,8 @@ Progress shown as page number and percentage at the bottom. Epub rendering: epub
 
 Cards of agent-generated candidates not yet in the library. Each card shows: source line (e.g. *LA GRANDE LIBRAIRIE — 14 AVRIL 2026*), title, author, year, and a short why excerpt. Two actions: *Ajouter* (primary, full-width) and *Écarter* (secondary). Dismissed cards are permanently removed — no undo, no archive.
 
+The header carries two utility buttons in addition to the title and count: *↻ Lancer une recherche* fires the Discovery workflow on demand (confirms before dispatching, then surfaces "Recherche lancée. Les nouvelles suggestions arriveront dans quelques minutes."); *+ Ajouter une suggestion* opens a sheet to add a candidate manually with a free-text source note.
+
 Three source types are valid:
 - Agent-generated (automated pipeline with source and date)
 - Manual (user adds a candidate directly with a personal source note, e.g. *CONVERSATION — 09 AVRIL 2026*)
@@ -234,26 +240,22 @@ Bottom tab bar, fixed, four items: Bibliothèque / Suggestions / Lecture / Régl
 
 ## Agents
 
-Both agents run on **GitHub Actions inside the data repo itself**, alongside the JSON files and epubs they read and write. The Discovery Agent runs on a `schedule:` cron; the Acquisition Agent runs on `workflow_dispatch`, triggered from the Book Detail view via the GitHub REST API using the user's PAT (which has `Actions: Read and Write` for that purpose). Cold-start latency on `workflow_dispatch` is ~20–30s — accepted as a tradeoff for keeping the entire stack on a single platform.
+Both agents run on **GitHub Actions inside the data repo itself**, alongside the JSON files and epubs they read and write. Both support `workflow_dispatch` — the app triggers them via the GitHub REST API using the user's PAT (which has `Actions: Read and Write` for that purpose). The Discovery Agent additionally runs on a weekly `schedule:` cron (Friday 08:00 UTC). Cold-start latency on `workflow_dispatch` is ~20–30s — accepted as a tradeoff for keeping the entire stack on a single platform.
 
 Because the workflows commit to their own repo, they use the auto-provisioned `${{ secrets.GITHUB_TOKEN }}` for writes — no separate PAT needs to be stored as a secret. The only repo-level secrets the workflows need are `ANTHROPIC_API_KEY` and `YOUTUBE_API_KEY`.
 
 ### Discovery Agent
 
-Runs on a configurable schedule (weekly or monthly). Monitors a configurable list of sources — the list is editable without touching the code. Source types include:
+Runs on the Friday cron and on-demand from the Suggestions header (*↻ Lancer une recherche*). Monitors a configurable list of sources defined in `agents/config/sources.json` — editable without touching the code. Implemented source types:
 
-- Video sources (La Grande Librairie and others) via YouTube Data API — episode descriptions and transcripts are the raw material, not audio processing
-- French literary press and critic bylines
-- Prize longlists (Renaudot, Médicis, Prix de Flore, Femina, Prix de Flore)
-- Affinity-based sources for backlist discovery (Babelio is a strong candidate; other approaches welcome)
+- `youtube_channels` — channels by handle (e.g. `@lagrandelibrairie`), resolved to a channel ID and pulled via YouTube Data API v3. Episode title + description form the raw material; transcripts are not yet used.
+- `rss_feeds` — generic Atom/RSS feeds parsed with `rss-parser`. Currently wired to *Le Monde des Livres*, *Télérama — Livres*, *Libération — Livres*. HTML in item bodies is stripped before going to Claude.
 
-The agent runs two parallel pipelines feeding the same inbox:
-- **New publications** — triggered by recent mentions in monitored sources
-- **Backlist** — titles from any period, surfaced by affinity rather than recency; runs less frequently
+Each source carries a `lookback_days` window (default 14). All collected items are fed one by one through `agents/discovery/filter.ts`, which calls Claude Opus 4.7 with `thinking: adaptive`, `effort: high`, and a JSON-schema output. The model evaluates each item against `agents/config/taste-profile.md` and returns zero or more `{title, author, year, why}` candidates. Candidates that match an entry in `books.json`, `inbox.json`, or `dismissed.json` (keyed on `author::title`, lowercase) are dropped. Survivors are appended to `inbox.json` in a single commit with a French source line of the form `LE MONDE DES LIVRES — 14 AVRIL 2026`.
 
-Each candidate is tagged with its source and pipeline. Dismissed candidates are permanently recorded and excluded from all future runs.
+Backlist discovery (Babelio + prize longlists, surfaced by affinity rather than recency) is described in `agents/config/sources.json` as a future source type but **not yet implemented** — only the new-publications pipeline currently runs.
 
-The agent uses the Claude API to interpret source content and apply the taste profile.
+Dismissed candidates are permanently recorded and excluded from all future runs.
 
 ### Acquisition Agent
 
